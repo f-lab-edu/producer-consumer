@@ -8,7 +8,7 @@ import java.util.LinkedList;
 public class MyQueueImpl<T> implements MyQueue<T> {
     // 공유자원
     LinkedList<T> queue = new LinkedList<T>();
-    // 공유자원에 접근하기 위한 키
+    // 협업을 가능하게 해주는 변수 (해당 변수의 값에 따라서 wait-set에서 스레드 기다리게 하기)
     private boolean isPushed = true;
     @Override
     public synchronized void push(T obj) throws InterruptedException {
