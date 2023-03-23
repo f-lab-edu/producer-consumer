@@ -1,5 +1,5 @@
 package interfaces;
 
-public interface Producer<T> {
-    public void send(MyQueue<T> queue, T obj) throws InterruptedException;
+public interface Producer<T> extends Runnable {
+    public void send(T object) throws InterruptedException;
 }
