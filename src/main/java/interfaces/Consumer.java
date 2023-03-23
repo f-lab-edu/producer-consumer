@@ -1,5 +1,5 @@
 package interfaces;
 
-public interface Consumer<T>{
-    public void consume(MyQueue<T> queue) throws InterruptedException;
+public interface Consumer<T> extends Runnable{
+    public void consume() throws InterruptedException;
 }
