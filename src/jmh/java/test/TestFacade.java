@@ -29,21 +29,25 @@ public class TestFacade {
 
 
     @Benchmark
-    public void testSynchronization_IfDefinitionIsRight_Success() throws InterruptedException {
-        // example array given
-        Integer[] integersInput  = {13,14,65,456,31,83,1331,65456};
+    public void testSynchronization_IfDefinitionIsRight_Success() {
+        try {
+            // example array given
+            Integer[] integersInput = {13, 14, 65, 456, 31, 83, 1331, 65456};
 
-        producer = new ProducerImpl<>(myQueue, integersInput);
-        consumer = new ConsumerImpl<>(myQueue);
+            producer = new ProducerImpl<>(myQueue, integersInput);
+            consumer = new ConsumerImpl<>(myQueue);
 
-        Thread producerThread = new Thread(producer);
-        Thread consumerThread = new Thread(consumer);
+            Thread producerThread = new Thread(producer);
+            Thread consumerThread = new Thread(consumer);
 
-        producerThread.start();
-        consumerThread.start();
+            producerThread.start();
+            consumerThread.start();
 
-        producerThread.join();
-        consumerThread.join();
+            producerThread.join();
+            consumerThread.join();
+        } catch (Exception err){
+            System.out.println("err: " + err);
+        }
     }
     @Test
     public void runBenchmarks() throws Exception {

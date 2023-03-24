@@ -1,6 +1,7 @@
 package extension;
 
 import interfaces.MyQueue;
+import interfaces.Producer;
 
 import java.util.LinkedList;
 
@@ -10,43 +11,62 @@ public class MyQueueImpl<T> implements MyQueue<T> {
     LinkedList<T> queue = new LinkedList<T>();
 
     // 협업을 가능하게 해주는 변수 (해당 변수의 값에 따라서 wait-set에서 스레드 기다리게 하기)
-    private int count = 0;
     private boolean isPushed = false;
     private boolean isPop = false;
     @Override
-    public synchronized void push(T obj) throws InterruptedException {
-        System.out.println("push method called");
-        while(isPop){
-            wait();
+    public synchronized void push(T obj) {
+        try{
+            System.out.println("push method called");
+
+            if(ProducerImpl.work) {
+                while (isPop) {
+                    wait();
+                }
+                isPushed = true;
+                System.out.println("queue added");
+                queue.add(obj);
+
+                notifyAll();
+                printQueue(isPushed);
+                isPushed = false;
+            }
+        } catch (InterruptedException err){
+            System.out.println("MyQueue Push Err: " + err);
+            Thread.currentThread().interrupt();
         }
-        isPushed = true;
-        count +=1;
-        System.out.println("queue added");
-        queue.add(obj);
-
-        notifyAll();
-
-        printQueue(isPushed);
-
-        isPushed = false;
     }
 
     @Override
-    public synchronized void pop() throws InterruptedException {
-        System.out.println("pop method called");
-        while (isPushed){
-            wait();
+    public synchronized void pop()  {
+        try {
+            System.out.println("pop method called");
+            if (queue.size() > 0 && ProducerImpl.work) {
+                while (isPushed) {
+                    wait();
+                }
+
+                isPop = true;
+
+                System.out.println("queue removed");
+                queue.remove();
+
+                notifyAll();
+
+                printQueue(isPushed);
+
+                isPop = false;
+            } else if (queue.size() > 0) {
+                isPop = true;
+                queue.remove();
+                printQueue(isPushed);
+                isPop = false;
+            } else if (!ProducerImpl.work) {
+                ConsumerImpl.work = false;
+            }
+        } catch (InterruptedException err){
+            System.out.println("MyQueue Pop Err: " + err);
+            Thread.currentThread().interrupt();
         }
-        isPop = true;
-
-        System.out.println("queue removed");
-        queue.remove();
-
-        notifyAll();
-
-        printQueue(isPushed);
-
-        isPop = false;
     }
 
     public void printQueue(Boolean state){
