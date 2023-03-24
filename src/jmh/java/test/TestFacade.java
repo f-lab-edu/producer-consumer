@@ -1,4 +1,4 @@
-package application;
+package test;
 
 import extension.ConsumerImpl;
 import extension.MyQueueImpl;
