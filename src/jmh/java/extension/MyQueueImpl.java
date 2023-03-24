@@ -8,37 +8,48 @@ import java.util.LinkedList;
 public class MyQueueImpl<T> implements MyQueue<T> {
     // 공유자원
     LinkedList<T> queue = new LinkedList<T>();
+
     // 협업을 가능하게 해주는 변수 (해당 변수의 값에 따라서 wait-set에서 스레드 기다리게 하기)
-    private boolean isPushed = true;
+    private int count = 0;
+    private boolean isPushed = false;
+    private boolean isPop = false;
     @Override
     public synchronized void push(T obj) throws InterruptedException {
-        while(isPushed){
+        System.out.println("push method called");
+        while(isPop){
             wait();
         }
         isPushed = true;
-
+        count +=1;
+        System.out.println("queue added");
         queue.add(obj);
 
         notifyAll();
 
-        printQueue();
+        printQueue(isPushed);
+
+        isPushed = false;
     }
 
     @Override
     public synchronized void pop() throws InterruptedException {
-        while (!isPushed){
+        System.out.println("pop method called");
+        while (isPushed){
             wait();
         }
-        isPushed = false;
+        isPop = true;
 
+        System.out.println("queue removed");
         queue.remove();
 
         notifyAll();
 
-        printQueue();
+        printQueue(isPushed);
+
+        isPop = false;
     }
 
-    public void printQueue(){
-        System.out.println("result"+queue);
+    public void printQueue(Boolean state){
+        System.out.println("isPushed: "+state+", result:" +queue);
     }
 }

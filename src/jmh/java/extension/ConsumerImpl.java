@@ -20,7 +20,8 @@ public class ConsumerImpl<T> implements Consumer<T> {
     public void run() {
         System.out.println("Consumer Thread start");
         try{
-            for(int i=0;i<3;++i) {
+            for(int i=0;i<1000;++i) {
+                Thread.sleep(2000);
                 this.consume();
             }
 
