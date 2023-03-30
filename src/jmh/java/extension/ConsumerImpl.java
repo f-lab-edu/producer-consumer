@@ -3,6 +3,8 @@ package extension;
 import interfaces.Consumer;
 import interfaces.MyQueue;
 
+import java.beans.IntrospectionException;
+
 public class ConsumerImpl<T> implements Consumer<T> {
     MyQueue<T> queue;
     static boolean work;
@@ -33,7 +35,7 @@ public class ConsumerImpl<T> implements Consumer<T> {
                 this.consume();
                 if(!work) {
                     System.out.println("Consumer Thread end");
-                    Thread.currentThread().interrupt();
+                    throw new IntrospectionException("Consumer Thread end");
                 }
             }
         } catch (Exception err){

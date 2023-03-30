@@ -13,22 +13,26 @@ public class MyQueueImpl<T> implements MyQueue<T> {
     // 협업을 가능하게 해주는 변수 (해당 변수의 값에 따라서 wait-set에서 스레드 기다리게 하기)
     private boolean isPushed = false;
     private boolean isPop = false;
+
     @Override
-    public synchronized void push(T obj) {
+    public void push(T obj) {
         try{
             System.out.println("push method called");
 
+            // sync non-blocking
             if(ProducerImpl.work) {
-                while (isPop) {
-                    wait();
-                }
-                isPushed = true;
-                System.out.println("queue added");
-                queue.add(obj);
+                synchronized (this) {
+                    while (isPop) {
+                        wait();
+                    }
+                    isPushed = true;
+                    System.out.println("queue added");
+                    queue.add(obj);
 
-                notifyAll();
-                printQueue(isPushed);
-                isPushed = false;
+                    notifyAll();
+                    printQueue(isPushed);
+                    isPushed = false;
+                }
             }
         } catch (InterruptedException err){
             System.out.println("MyQueue Push Err: " + err);
@@ -37,24 +41,26 @@ public class MyQueueImpl<T> implements MyQueue<T> {
     }
 
     @Override
-    public synchronized void pop()  {
+    public void pop()  {
         try {
             System.out.println("pop method called");
             if (queue.size() > 0 && ProducerImpl.work) {
-                while (isPushed) {
-                    wait();
+                synchronized(this) {
+                    while (isPushed) {
+                        wait();
+                    }
+
+                    isPop = true;
+
+                    System.out.println("queue removed");
+                    queue.remove();
+
+                    notifyAll();
+
+                    printQueue(isPushed);
+                    isPop = false;
                 }
 
-                isPop = true;
-
-                System.out.println("queue removed");
-                queue.remove();
-
-                notifyAll();
-
-                printQueue(isPushed);
-
-                isPop = false;
             } else if (queue.size() > 0) {
                 isPop = true;
                 queue.remove();
