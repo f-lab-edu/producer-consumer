@@ -24,7 +24,7 @@ public class TestFacade {
 
     @Setup(Level.Trial)
     public void init(){
-        myQueue = new MyQueueImpl<>();
+        myQueue = new MyQueueImpl<>(30);
     }
 
 
@@ -55,7 +55,7 @@ public class TestFacade {
                 .include(this.getClass().getName() + ".*")
                 .mode(Mode.SingleShotTime)
                 .threads(2)
-                .measurementIterations(6)
+                .measurementIterations(3)
                 .forks(5)
                 .shouldFailOnError(true)
                 .shouldDoGC(true)
